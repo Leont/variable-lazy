@@ -1,8 +1,11 @@
 Build.PL
 Changes
+lib/Variable/Lazy.pm
+lib/Variable/Lazy/Util.xs
+lib/Variable/Lazy/Util.pm
 MANIFEST
 README
-lib/Variable/Lazy.pm
 t/00-load.t
+t/10-basics.t
 t/pod-coverage.t
 t/pod.t

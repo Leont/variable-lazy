@@ -1,13 +1,17 @@
-package Variable::Lazy;
+package Variable::Lazy::Util;
 
 use strict;
 use warnings;
 
-BEGIN {
-	our $VERSION = '0.01';
-	require Variable::Lazy::Util;
-	Variable::Lazy::Util->import();
-}
+require Variable::Lazy;
+
+our $VERSION = $Variable::Lazy::VERSION;
+
+use base qw/DynaLoader Exporter/;
+
+bootstrap Variable::Lazy::Util $VERSION;
+
+our @EXPORT = qw/set_lazy/;
 
 1; # End of Variable::Lazy
 
@@ -15,7 +19,7 @@ __END__
 
 =head1 NAME
 
-Variable::Lazy - Lazy variables
+Variable::Lazy::Util - Variables that lazily initialize themselves
 
 =head1 VERSION
 
@@ -23,12 +27,15 @@ Version 0.01
 
 =head1 SYNOPSIS
 
- lazy $var = foo();
+set_lazy $self->{foo}, sub { return life_universe_everything(); };
+...do something else
+$self->{foo}->bar();
 
-=head1 DESCRIPTION
+=head1 FUNCTIONS
 
-This module will implement lazy variables. Currently, the backside of this is implemented (see L<Variable::Lazy::Util>), but the syntactic sugar isn't yet. It will be different from other similar modules in that it works B<completely> transparant: there is no way to see from the outside that the variable was lazy
-, and there will be no speed penalty once the variable has been evaluated.
+=head2 set_lazy($variable, $subroutine)
+
+Attaches a 
 
 =head1 AUTHOR
 

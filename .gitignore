@@ -8,3 +8,6 @@ pm_to_blib*
 .lwpcookies
 Variable-Lazy-*
 cover_db
+.*.swp
+*.c
+*.o
