@@ -11,7 +11,7 @@ use base qw/DynaLoader Exporter/;
 
 bootstrap Variable::Lazy::Util $VERSION;
 
-our @EXPORT = qw/set_lazy/;
+our @EXPORT = qw/lazy/;
 
 1; # End of Variable::Lazy
 
@@ -27,13 +27,13 @@ Version 0.01
 
 =head1 SYNOPSIS
 
-set_lazy $self->{foo}, sub { return life_universe_everything(); };
+lazy $self->{foo}, sub { return life_universe_everything(); };
 ...do something else
 $self->{foo}->bar();
 
 =head1 FUNCTIONS
 
-=head2 set_lazy($variable, $subroutine)
+=head2 lazy($variable, $subroutine)
 
 Attaches a 
 

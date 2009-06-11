@@ -5,8 +5,46 @@ use warnings;
 
 BEGIN {
 	our $VERSION = '0.01';
-	require Variable::Lazy::Util;
-	Variable::Lazy::Util->import();
+}
+use Variable::Lazy::Util ();
+
+use Devel::Declare ();
+use B::Hooks::EndOfScope;
+
+sub import {
+	my $class = shift;
+	my $package = caller;
+
+	Devel::Declare->setup_for(
+		$package,
+		{ lazy => { const => \&_parser } }
+	);
+	{
+		no strict 'refs';
+		*{$package.'::lazy'} = \&Variable::Lazy::Util::lazy;
+	}
+}
+
+my $counter = 0;
+
+sub _parser {
+	my ($declarator, $offset) = @_;
+	my $linestr = Devel::Declare::get_linestr;
+	for (substr($linestr, $offset)) {
+		s/ ^ lazy \s* ( (?:my \s*)? \$ \w+ ) \s* = \s* {/lazy $1, \\\@_, sub { BEGIN { Variable::Lazy::_inject_scope }; /xms
+			or s/ ^ lazy \s* {/lazy \\\@_, sub { /xms;
+	}
+#	warn qq{# "$linestr"};
+	Devel::Declare::set_linestr($linestr);
+}
+
+sub _inject_scope {
+    on_scope_end {
+		my $linestr = Devel::Declare::get_linestr;
+		my $offset = Devel::Declare::get_linestr_offset;
+		substr($linestr, $offset, 0) = ';';
+		Devel::Declare::set_linestr($linestr);
+    };
 }
 
 1; # End of Variable::Lazy
@@ -27,8 +65,7 @@ Version 0.01
 
 =head1 DESCRIPTION
 
-This module will implement lazy variables. Currently, the backside of this is implemented (see L<Variable::Lazy::Util>), but the syntactic sugar isn't yet. It will be different from other similar modules in that it works B<completely> transparant: there is no way to see from the outside that the variable was lazy
-, and there will be no speed penalty once the variable has been evaluated.
+This module implements lazy variables. It's different from other similar modules in that it works B<completely> transparant: there is no way to see from the outside that the variable was lazy, and there is no speed penalty once the variable has been evaluated.
 
 =head1 AUTHOR
 
