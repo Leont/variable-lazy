@@ -1,4 +1,4 @@
-package Variable::Lazy::Util;
+package Variable::Lazy::Guts;
 
 use strict;
 use warnings;
@@ -9,7 +9,7 @@ our $VERSION = $Variable::Lazy::VERSION;
 
 use base qw/DynaLoader Exporter/;
 
-bootstrap Variable::Lazy::Util $VERSION;
+bootstrap Variable::Lazy::Guts $VERSION;
 
 our @EXPORT = qw/lazy/;
 
@@ -19,7 +19,7 @@ __END__
 
 =head1 NAME
 
-Variable::Lazy::Util - Variables that lazily initialize themselves
+Variable::Lazy::Guts - Variables that lazily initialize themselves
 
 =head1 VERSION
 

@@ -6,33 +6,32 @@ use warnings;
 BEGIN {
 	our $VERSION = '0.01';
 }
-use Variable::Lazy::Util ();
+use Variable::Lazy::Guts ();
 
 use Devel::Declare ();
 use B::Hooks::EndOfScope;
+use Carp 'croak';
 
 sub import {
-	my $class = shift;
 	my $package = caller;
 
 	Devel::Declare->setup_for(
-		$package,
-		{ lazy => { const => \&_parser } }
+		$package, {
+			lazy     => { const => \&_parser },
+		}
 	);
-	{
-		no strict 'refs';
-		*{$package.'::lazy'} = \&Variable::Lazy::Util::lazy;
-	}
-}
 
-my $counter = 0;
+	splice @_, 0, 1, 'Variable::Lazy::Guts';
+	goto &{ Variable::Lazy::Guts->can('import') };
+}
 
 sub _parser {
 	my ($declarator, $offset) = @_;
 	my $linestr = Devel::Declare::get_linestr;
-	for (substr($linestr, $offset)) {
+	for (substr $linestr, $offset) {
 		s/ ^ lazy \s* ( (?:my \s*)? \$ \w+ ) \s* = \s* {/lazy $1, \\\@_, sub { BEGIN { Variable::Lazy::_inject_scope }; /xms
-			or s/ ^ lazy \s* {/lazy \\\@_, sub { /xms;
+			or s/ ^ lazy \s* {/lazy \\\@_, sub { /xms
+			or croak "Invalid lazy expression";
 	}
 #	warn qq{# "$linestr"};
 	Devel::Declare::set_linestr($linestr);

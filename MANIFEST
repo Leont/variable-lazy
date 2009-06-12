@@ -1,8 +1,8 @@
 Build.PL
 Changes
 lib/Variable/Lazy.pm
-lib/Variable/Lazy/Util.xs
-lib/Variable/Lazy/Util.pm
+lib/Variable/Lazy/Guts.xs
+lib/Variable/Lazy/Guts.pm
 MANIFEST
 README
 t/00-load.t

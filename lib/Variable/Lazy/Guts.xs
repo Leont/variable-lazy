@@ -23,7 +23,7 @@ static int call_get(pTHX_ SV* var, MAGIC* magic) {
 
 static const MGVTBL magic_table  = { call_get, 0, 0, 0, 0};
 
-MODULE = Variable::Lazy::Util				PACKAGE = Variable::Lazy::Util
+MODULE = Variable::Lazy::Guts				PACKAGE = Variable::Lazy::Guts
 
 SV*
 lazy(...)
