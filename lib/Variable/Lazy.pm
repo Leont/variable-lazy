@@ -11,6 +11,7 @@ use Variable::Lazy::Guts ();
 use Devel::Declare ();
 use B::Hooks::EndOfScope;
 use Carp 'croak';
+our @CARP_NOT = qw/Devel::Declare/;
 
 sub import {
 	my $package = caller;
@@ -27,14 +28,40 @@ sub import {
 
 sub _parser {
 	my ($declarator, $offset) = @_;
+	my $begin = $offset;
 	my $linestr = Devel::Declare::get_linestr;
-	for (substr $linestr, $offset) {
-		s/ ^ lazy \s* ( (?:my \s*)? \$ \w+ ) \s* = \s* {/lazy $1, \\\@_, sub { BEGIN { Variable::Lazy::_inject_scope }; /xms
-			or s/ ^ lazy \s* {/lazy \\\@_, sub { /xms
-			or croak "Invalid lazy expression";
+	$offset += Devel::Declare::toke_move_past_token($offset);
+	$offset += Devel::Declare::toke_skipspace($offset);
+
+	if (substr($linestr, $offset, 1) eq '{') {
+		substr($linestr, $offset, 1) = '\\@_, sub {';
+	}
+	else {
+		if (my $length = Devel::Declare::toke_scan_word($offset, 0)) {
+			my $word = substr $linestr, $offset, $length;
+			croak "Invalid word '$word' in lazy expression" unless $word eq 'my' or $word eq 'our';
+			$offset += $length;
+			$offset += Devel::Declare::toke_skipspace($offset);
+		}
+
+		croak "Variable expected" if (substr($linestr, $offset++, 1) ne '$');
+		my $length = Devel::Declare::toke_scan_word($offset, 0);
+		croak "Variable name expected" if $length == 0;
+		$offset += $length;
+
+		$offset += Devel::Declare::toke_skipspace($offset);
+
+		croak "Assignment expected" if (substr($linestr, $offset, 1) ne '=');
+		substr($linestr, $offset++, 1) = ",";
+
+		$offset += Devel::Declare::toke_skipspace($offset);
+
+		croak "Opening bracket expected" if (substr($linestr, $offset, 1) ne '{');
+		substr($linestr, $offset, 1) = '\\@_, sub { BEGIN { Variable::Lazy::_inject_scope }; ';
 	}
 #	warn qq{# "$linestr"};
 	Devel::Declare::set_linestr($linestr);
+	return;
 }
 
 sub _inject_scope {
@@ -44,6 +71,7 @@ sub _inject_scope {
 		substr($linestr, $offset, 0) = ';';
 		Devel::Declare::set_linestr($linestr);
     };
+	return;
 }
 
 1; # End of Variable::Lazy
