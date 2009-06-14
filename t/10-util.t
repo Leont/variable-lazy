@@ -1,7 +1,7 @@
 #!perl -T
 
 use Test::More tests => 4;
-use Variable::Lazy::Guts;
+use Variable::Lazy::Guts 'lazy';
 
 my $num = 1;
 lazy my $foo, \@_, sub { $num++ };

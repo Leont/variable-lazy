@@ -12,7 +12,7 @@ is($x,   1, '$x   == 1');
 is($num, 2, '$num == 2');
 is($x,   1, '$x   == 1');
 
-is((lazy { $num }), $num, 'lazy $num = $num');
+is(lazy { $num }, $num, 'lazy $num = $num');
 
 
 sub foo {
