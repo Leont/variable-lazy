@@ -25,6 +25,7 @@ my $builder = Module::Build->new(
 	},
 	add_to_cleanup      => [ 'Variable-Lazy-*' ],
 	create_makefile_pl => 'traditional',
+	sign                => 1,
 );
 
 $builder->create_build_script();
