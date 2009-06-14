@@ -11,9 +11,9 @@ use base qw/DynaLoader Exporter/;
 
 bootstrap Variable::Lazy::Guts $VERSION;
 
-our @EXPORT = qw/lazy/;
+our @EXPORT_OK = qw/lazy/;
 
-1; # End of Variable::Lazy
+1;    # End of Variable::Lazy
 
 __END__
 
@@ -31,11 +31,11 @@ lazy $self->{foo}, sub { return life_universe_everything(); };
 ...do something else
 $self->{foo}->bar();
 
+This is the module implementing the magic of Variable::Lazy. You should probably be using this yourselves. No kind of API stability is guaranteed.
+
 =head1 FUNCTIONS
 
-=head2 lazy($variable, $subroutine)
-
-Attaches a 
+=head2 lazy($variable, $arguments, $subroutine)
 
 =head1 AUTHOR
 
