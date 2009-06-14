@@ -11,3 +11,5 @@ cover_db
 .*.swp
 *.c
 *.o
+META.yml
+Makefile.PL
