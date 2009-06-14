@@ -16,25 +16,22 @@ our @CARP_NOT = qw/Devel::Declare/;
 sub import {
 	my $package = caller;
 
-	Devel::Declare->setup_for(
-		$package, {
-			lazy     => { const => \&_parser },
-		}
-	);
+	Devel::Declare->setup_for($package, { lazy => { const => \&_parser } });
 
-	splice @_, 0, 1, 'Variable::Lazy::Guts';
-	goto &{ Variable::Lazy::Guts->can('import') };
+	{
+		no strict 'refs';
+		*{ $package . "::lazy" } = \&Variable::Lazy::Guts::lazy;
+	}
 }
 
 sub _parser {
 	my ($declarator, $offset) = @_;
-	my $begin = $offset;
 	my $linestr = Devel::Declare::get_linestr;
 	$offset += Devel::Declare::toke_move_past_token($offset);
 	$offset += Devel::Declare::toke_skipspace($offset);
 
 	if (substr($linestr, $offset, 1) eq '{') {
-		substr($linestr, $offset, 1) = '\\@_, sub {';
+		substr $linestr, $offset, 1, q((\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(')') };);
 	}
 	else {
 		if (my $length = Devel::Declare::toke_scan_word($offset, 0)) {
@@ -44,37 +41,37 @@ sub _parser {
 			$offset += Devel::Declare::toke_skipspace($offset);
 		}
 
-		croak "Variable expected" if (substr($linestr, $offset++, 1) ne '$');
+		croak 'Variable expected' if (substr($linestr, $offset++, 1) ne '$');
 		my $length = Devel::Declare::toke_scan_word($offset, 0);
-		croak "Variable name expected" if $length == 0;
+		croak 'Variable name expected' if $length == 0;
 		$offset += $length;
 
 		$offset += Devel::Declare::toke_skipspace($offset);
 
-		croak "Assignment expected" if (substr($linestr, $offset, 1) ne '=');
-		substr($linestr, $offset++, 1) = ",";
+		croak 'Assignment expected' if (substr($linestr, $offset, 1) ne '=');
+		substr $linestr, $offset++, 1, ',';
 
 		$offset += Devel::Declare::toke_skipspace($offset);
 
-		croak "Opening bracket expected" if (substr($linestr, $offset, 1) ne '{');
-		substr($linestr, $offset, 1) = '\\@_, sub { BEGIN { Variable::Lazy::_inject_scope }; ';
+		croak 'Opening bracket expected' if (substr($linestr, $offset, 1) ne '{');
+		substr $linestr, $offset, 1, q(\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(';') }; );
 	}
-#	warn qq{# "$linestr"};
 	Devel::Declare::set_linestr($linestr);
 	return;
 }
 
 sub _inject_scope {
-    on_scope_end {
+	my $terminator = shift;
+	on_scope_end {
 		my $linestr = Devel::Declare::get_linestr;
-		my $offset = Devel::Declare::get_linestr_offset;
-		substr($linestr, $offset, 0) = ';';
+		my $offset  = Devel::Declare::get_linestr_offset;
+		substr $linestr, $offset, 0, $terminator;
 		Devel::Declare::set_linestr($linestr);
-    };
+	};
 	return;
 }
 
-1; # End of Variable::Lazy
+1;    # End of Variable::Lazy
 
 __END__
 
@@ -88,7 +85,9 @@ Version 0.01
 
 =head1 SYNOPSIS
 
- lazy $var = foo();
+ lazy my $var = { foo() }
+
+
 
 =head1 DESCRIPTION
 
