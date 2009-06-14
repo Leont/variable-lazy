@@ -12,8 +12,16 @@ my $builder = Module::Build->new(
 		'Test::More'            => 0,
 	},
 	requires            => {
+		perl                    => 5.007003,
 		'Devel::Declare'        => 0,
 		'B::Hooks::EndOfScope'  => 0,
+	},
+	meta_merge => {
+		resources      => {
+			bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Variable-Lazy',
+			repository => 'http://github.com/Leont/variable-lazy/tree',
+		},
+		keywords       => [ 'lazy', 'laziness' ],
 	},
 	add_to_cleanup      => [ 'Variable-Lazy-*' ],
 	create_makefile_pl => 'traditional',
