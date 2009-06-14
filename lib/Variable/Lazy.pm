@@ -6,11 +6,11 @@ use warnings;
 BEGIN {
 	our $VERSION = '0.01';
 }
-use Variable::Lazy::Guts ();
+use Variable::Lazy::Guts;
 
 use Devel::Declare ();
 use B::Hooks::EndOfScope;
-use Carp 'croak';
+use Carp qw/croak/;
 our @CARP_NOT = qw/Devel::Declare/;
 
 sub import {
@@ -20,8 +20,9 @@ sub import {
 
 	{
 		no strict 'refs';
-		*{ $package . "::lazy" } = \&Variable::Lazy::Guts::lazy;
+		*{ $package . '::lazy' } = \&Variable::Lazy::Guts::lazy;
 	}
+	return;
 }
 
 sub _parser {
@@ -31,7 +32,7 @@ sub _parser {
 	$offset += Devel::Declare::toke_skipspace($offset);
 
 	if (substr($linestr, $offset, 1) eq '{') {
-		substr $linestr, $offset, 1, q((\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(')') };);
+		substr $linestr, $offset, 1, q/(\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(')') };/;
 	}
 	else {
 		if (my $length = Devel::Declare::toke_scan_word($offset, 0)) {
@@ -41,20 +42,18 @@ sub _parser {
 			$offset += Devel::Declare::toke_skipspace($offset);
 		}
 
-		croak 'Variable expected' if (substr($linestr, $offset++, 1) ne '$');
-		my $length = Devel::Declare::toke_scan_word($offset, 0);
-		croak 'Variable name expected' if $length == 0;
-		$offset += $length;
+		croak 'Variable expected' if substr($linestr, $offset, 1) ne '$';
+		$offset += Devel::Declare::toke_scan_ident($offset) || croak 'Variable name expected';
 
 		$offset += Devel::Declare::toke_skipspace($offset);
 
-		croak 'Assignment expected' if (substr($linestr, $offset, 1) ne '=');
+		croak 'Assignment expected' if substr($linestr, $offset, 1) ne '=';
 		substr $linestr, $offset++, 1, ',';
 
 		$offset += Devel::Declare::toke_skipspace($offset);
 
-		croak 'Opening bracket expected' if (substr($linestr, $offset, 1) ne '{');
-		substr $linestr, $offset, 1, q(\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(';') }; );
+		croak 'Opening bracket expected' if substr($linestr, $offset, 1) ne '{';
+		substr $linestr, $offset, 1, q/\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(';') }; /;
 	}
 	Devel::Declare::set_linestr($linestr);
 	return;
@@ -87,8 +86,6 @@ Version 0.01
 
  lazy my $var = { foo() }
 
-
-
 =head1 DESCRIPTION
 
 This module implements lazy variables. It's different from other similar modules in that it works B<completely> transparant: there is no way to see from the outside that the variable was lazy, and there is no speed penalty once the variable has been evaluated.
@@ -99,11 +96,11 @@ Leon Timmermans, C<< <leont at cpan.org> >>
 
 =head1 BUGS
 
+This is an early release, bugs are to be expected at this stage.
+
 Please report any bugs or feature requests to C<bug-variable-lazy at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Variable-Lazy>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
 
 
 =head1 SUPPORT

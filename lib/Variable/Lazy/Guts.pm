@@ -9,7 +9,7 @@ our $VERSION = $Variable::Lazy::VERSION;
 
 use base qw/DynaLoader Exporter/;
 
-bootstrap Variable::Lazy::Guts $VERSION;
+__PACKAGE__->bootstrap($VERSION);
 
 our @EXPORT_OK = qw/lazy/;
 
