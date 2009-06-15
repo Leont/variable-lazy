@@ -24,7 +24,7 @@ my $builder = Module::Build->new(
 		keywords       => [ 'lazy', 'laziness' ],
 	},
 	add_to_cleanup      => [ 'Variable-Lazy-*' ],
-	create_makefile_pl => 'traditional',
+	create_makefile_pl  => 'passthrough',
 	sign                => 1,
 );
 
