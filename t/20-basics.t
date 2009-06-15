@@ -1,11 +1,11 @@
 #!perl -T
 
-use Test::More tests => 17;
+use Test::More tests => 20;
 use Variable::Lazy;
 
 my $num = 1;
 
-lazy my $x = { $num++ }
+lazy my $x = { $num++ };
 
 is($num, 1, '$num == 1');
 is($x,   1, '$x   == 1');
@@ -24,12 +24,21 @@ sub foo {
 
 foo(lazy { $num++ } );
 
-lazy $x = { --$num }
+lazy $x = { --$num };
 
 is($num, 3, '$num == 3');
 is($x,   2, '$x   == 2');
 is($num, 2, '$num == 2');
 is($x,   2, '$x   == 2');
+
+lazy my $y = { ++$num };
+
+$y = 0;
+
+is($num, 2, '$num == 3');
+is($y,   0, '$y   == 2');
+is($num, 2, '$num == 3');
+
 
 $reference = $num;
 

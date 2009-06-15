@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 BEGIN {
-	our $VERSION = '0.01';
+	our $VERSION = '0.02';
 }
 use Variable::Lazy::Guts;
 
@@ -53,7 +53,7 @@ sub _parser {
 		$offset += Devel::Declare::toke_skipspace($offset);
 
 		croak 'Opening bracket expected' if substr($linestr, $offset, 1) ne '{';
-		substr $linestr, $offset, 1, q/\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(';') }; /;
+		substr $linestr, $offset, 1, q/\\@_, sub { /;
 	}
 	Devel::Declare::set_linestr($linestr);
 	return;
@@ -80,7 +80,7 @@ Variable::Lazy - Lazy variables
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
