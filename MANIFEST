@@ -6,6 +6,7 @@ lib/Variable/Lazy/Guts.xs
 Makefile.PL
 MANIFEST
 META.yml
+LICENSE
 README
 t/00-load.t
 t/10-guts.t
