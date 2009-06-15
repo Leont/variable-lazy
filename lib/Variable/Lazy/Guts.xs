@@ -40,6 +40,7 @@ lazy(...)
 		SV* arguments = SvRV(POPs);
 		SV* variable  = (items == 3) ? POPs : newSV(0);
 		SvREFCNT_inc(arguments);
+		call_remove(aTHX_ variable, NULL);
 		sv_magicext(variable, (SV*)subref, PERL_MAGIC_ext, &magic_table, (char*)arguments, HEf_SVKEY);
 		XPUSHs(variable);
 		
