@@ -7,14 +7,20 @@ my $builder = Module::Build->new(
 	license             => 'perl',
 	dist_author         => 'Leon Timmermans <leont@cpan.org>',
 	dist_version_from   => 'lib/Variable/Lazy.pm',
+	configure_requires  => {
+		'Module::Build'         => 0,
+	},
 	build_requires => {
 		'ExtUtils::CBuilder'    => 0,
+		'Module::Build'         => 0,
 		'Test::More'            => 0,
 	},
 	requires            => {
-		perl                    => 5.007003,
-		'Devel::Declare'        => 0,
+		perl                    => 5.008,
 		'B::Hooks::EndOfScope'  => 0,
+		'Devel::Declare'        => 0,
+		Exporter                => 5.57,
+		'namespace::clean'      => 0,
 	},
 	meta_merge => {
 		resources      => {
@@ -24,7 +30,7 @@ my $builder = Module::Build->new(
 		keywords       => [ 'lazy', 'laziness' ],
 	},
 	add_to_cleanup      => [ 'Variable-Lazy-*' ],
-	create_makefile_pl  => 'passthrough',
+	create_makefile_pl  => 'small',
 	sign                => 1,
 );
 

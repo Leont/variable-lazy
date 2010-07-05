@@ -1,15 +1,13 @@
 package Variable::Lazy::Guts;
 
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
-require Variable::Lazy;
+our $VERSION = '0.02';
 
-our $VERSION = $Variable::Lazy::VERSION;
-
-use base qw/DynaLoader Exporter/;
-
-__PACKAGE__->bootstrap($VERSION);
+use XSLoader;
+use Exporter 5.57 qw/import/;
+XSLoader::load(__PACKAGE__, $VERSION);
 
 our @EXPORT_OK = qw/lazy/;
 
@@ -23,19 +21,21 @@ Variable::Lazy::Guts - Variables that lazily initialize themselves
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
-lazy $self->{foo}, sub { return life_universe_everything(); };
-...do something else
-$self->{foo}->bar();
+ lazy $self->{foo}, [], sub { return life_universe_everything(); };
+ ...do something else
+ $self->{foo}->bar();
 
-This is the module implementing the magic of Variable::Lazy. You should probably be using this yourselves. No kind of API stability is guaranteed.
+This is the module implementing the magic of Variable::Lazy. You should probably not be using this yourselves. No kind of API stability is guaranteed.
 
 =head1 FUNCTIONS
 
 =head2 lazy($variable, $arguments, $subroutine)
+
+Adds lazy magic to a variable. You don't want to assign this immidiately to a new variable, as this will trigger reification. $arguments is a arrayref to the arguments for $subroutine. 
 
 =head1 AUTHOR
 
@@ -47,15 +47,11 @@ Please report any bugs or feature requests to C<bug-variable-lazy at rt.cpan.org
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Variable-Lazy>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
-
-
-
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc Variable::Lazy
-
 
 You can also look for information at:
 
@@ -79,13 +75,9 @@ L<http://search.cpan.org/dist/Variable-Lazy>
 
 =back
 
-
-=head1 ACKNOWLEDGEMENTS
-
-
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 Leon Timmermans, all rights reserved.
+Copyright 2009, 2010 Leon Timmermans, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

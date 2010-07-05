@@ -9,11 +9,11 @@ static int call_remove(pTHX_ SV* var, MAGIC* magic) {
 
 static int call_get(pTHX_ SV* var, MAGIC* magic) {
 	dSP;
+	int i;
+	AV* arguments = (AV*)magic->mg_ptr;
 	ENTER;
 	SAVETMPS;
 	PUSHMARK(SP);
-	AV* arguments = (AV*)magic->mg_ptr;
-	int i;
 	for(i = 0; i < av_len(arguments); i++)
 		XPUSHs(*av_fetch(arguments, i, FALSE));
 	PUTBACK;
@@ -30,17 +30,12 @@ static const MGVTBL magic_table  = { call_get, call_remove, 0, call_remove, 0};
 MODULE = Variable::Lazy::Guts				PACKAGE = Variable::Lazy::Guts
 
 SV*
-lazy(...)
+lazy(variable, arguments, subref)
+	SV* variable;
+	SV* arguments = SvRV(ST(1));
+	SV* subref;
 	CODE:
-		if (items < 2)
-			Perl_croak(aTHX_ "Not enough arguments for lazy");
-		if (items > 3)
-			Perl_croak(aTHX_ "Too many arguments for lazy");
-		SV* subref = POPs;
-		SV* arguments = SvRV(POPs);
-		SV* variable  = (items == 3) ? POPs : newSV(0);
 		SvREFCNT_inc(arguments);
 		call_remove(aTHX_ variable, NULL);
 		sv_magicext(variable, (SV*)subref, PERL_MAGIC_ext, &magic_table, (char*)arguments, HEf_SVKEY);
-		XPUSHs(variable);
-		
+		/* Returns its own first argument */

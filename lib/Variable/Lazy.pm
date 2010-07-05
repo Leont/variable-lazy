@@ -1,16 +1,15 @@
 package Variable::Lazy;
 
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
-BEGIN {
-	our $VERSION = '0.02';
-}
+our $VERSION = '0.02';
 use Variable::Lazy::Guts;
 
-use Devel::Declare ();
+use Devel::Declare;
 use B::Hooks::EndOfScope;
 use Carp qw/croak/;
+use namespace::clean;
 our @CARP_NOT = qw/Devel::Declare/;
 
 sub import {
@@ -32,7 +31,7 @@ sub _parser {
 	$offset += Devel::Declare::toke_skipspace($offset);
 
 	if (substr($linestr, $offset, 1) eq '{') {
-		substr $linestr, $offset, 1, q/(\\@_, sub { BEGIN { Variable::Lazy::_inject_scope(')') };/;
+		substr $linestr, $offset, 1, q/(Variable::Lazy::_variable(), \\@_, sub { BEGIN { Variable::Lazy::_inject_scope(')') }; /;
 	}
 	else {
 		if (my $length = Devel::Declare::toke_scan_word($offset, 0)) {
@@ -57,6 +56,10 @@ sub _parser {
 	}
 	Devel::Declare::set_linestr($linestr);
 	return;
+}
+
+sub _variable {
+	return my $foo;
 }
 
 sub _inject_scope {
@@ -89,6 +92,10 @@ Version 0.02
 =head1 DESCRIPTION
 
 This module implements lazy variables. It's different from other similar modules in that it works B<completely> transparant: there is no way to see from the outside that the variable was lazy, and there is no speed penalty once the variable has been evaluated.
+
+=head1 CAVEATS
+
+The reification is triggered more easily than most other laziness modules. Unlike other modules it doesn't use referential semantics, so assigning the value to an other variable triggers it. This is something to keep into account.
 
 =head1 AUTHOR
 
