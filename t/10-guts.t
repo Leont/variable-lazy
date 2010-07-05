@@ -1,5 +1,7 @@
 #!perl -T
 
+use strict;
+use warnings FATAL => 'all';
 use Test::More tests => 4;
 use Variable::Lazy::Guts 'lazy';
 

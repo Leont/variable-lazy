@@ -1,5 +1,7 @@
 #!perl -T
 
+use strict;
+use warnings FATAL => 'all';
 use Test::More tests => 20;
 use Variable::Lazy;
 
@@ -40,7 +42,7 @@ is($y,   0, '$y   == 2');
 is($num, 2, '$num == 3');
 
 
-$reference = $num;
+my $reference = $num;
 
 sub bar {
 	my $argument = $_[0];
