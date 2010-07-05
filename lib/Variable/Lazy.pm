@@ -3,7 +3,7 @@ package Variable::Lazy;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use Variable::Lazy::Guts;
 
 use Devel::Declare;

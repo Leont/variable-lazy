@@ -3,7 +3,7 @@ package Variable::Lazy::Guts;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use XSLoader;
 use Exporter 5.57 qw/import/;
