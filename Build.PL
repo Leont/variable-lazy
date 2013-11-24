@@ -25,7 +25,7 @@ my $builder = Module::Build->new(
 	meta_merge => {
 		resources      => {
 			bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=Variable-Lazy',
-			repository => 'http://github.com/Leont/variable-lazy/tree',
+			repository => 'http://github.com/Leont/variable-lazy',
 		},
 		keywords       => [ 'lazy', 'laziness' ],
 	},
